@@ -1,0 +1,135 @@
+/* Reset CSS */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+button {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+/* Custom styles */
+body {
+  font-family: Verdana, Arial, sans-serif;
+}
+
+#outline {
+  width: 350px;
+  height: 500px;
+  margin: 5% auto;
+  border: 1px solid lightgray;
+  border-radius: 30px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: white;
+}
+
+#display {
+  flex: 1 0 0;
+  background-color: rgba(2, 30, 73, 1);
+  font-size: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#button-pad {
+  flex: 3 0 0;
+  display: flex;
+  font-size: 32px;
+}
+
+#numbers-and-clear {
+  flex: 3 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#numbers-and-clear > * {
+  flex: 1 0 0;
+}
+
+#numbers-and-clear > div {
+  display: flex;
+}
+
+#clear {
+  background-color: rgba(13, 106, 145, 0.9);
+}
+#clear:hover {
+  background-color: rgba(13, 106, 145, 0.8);
+}
+#clear:active {
+  background-color: rgba(13, 106, 145, 1.0);
+}
+
+#operators {
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid black;
+}
+
+#operators > * {
+  background-color: rgba(235, 163, 38, 0.9);
+}
+#operators > *:hover {
+  background-color: rgba(235, 163, 38, 0.8);
+}
+#operators > *:active {
+  background-color: rgba(235, 163, 38, 1.0);
+}
+
+button {
+  display: block;
+  flex: 1 0 0;
+}
+
+.number-row > :not(:last-child) {
+  border-right: 1px solid black;
+}
+
+.number-row > *,
+#zero {
+  background-color: rgba(41, 72, 109, 0.9);
+}
+.number-row > *:hover,
+#zero:hover {
+  background-color: rgba(41, 72, 109, 0.8);
+}
+.number-row > *:active,
+#zero:active {
+  background-color: rgba(41, 72, 109, 1.0);
+}
+
+#operators > :not(:last-child),
+#clear,
+.number-row {
+  border-bottom: 1px solid black;
+}
