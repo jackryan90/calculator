@@ -1,79 +1,212 @@
+let inputs = ["", ""];
+let inputIdx = 0;
+let output = "";
+let operator = "";
+const maxDigits = 12;
+
+/**
+ * Add two numbers.
+ * @param {*} a The first addend, as a float.
+ * @param {*} b The second addend, as a float.
+ * @returns The sum of a and b.
+ */
 function add(a, b) {
-  // Add two numbers.
   return a + b;
 }
 
+/**
+ * Subtract one number from another number.
+ * @param {*} a The minuend, as a float.
+ * @param {*} b The subtrahend, as a float.
+ * @returns The difference of a and b.
+ */
 function subtract(a, b) {
-  // Subtract two numbers.
   return a - b;
 }
 
+/**
+ * Multiply two numbers.
+ * @param {*} a The first multiplicand, as a float.
+ * @param {*} b The second multiplicand, as a float.
+ * @returns The product of a and b.
+ */
 function multiply(a, b) {
-  // Multiply two numbers.
   return a * b;
 }
 
+/**
+ * Divide one number by another number.
+ * @param {*} a The dividend, as a float.
+ * @param {*} b The divisor, as a float.
+ * @returns The quotient of a and b.
+ */
 function divide(a, b) {
-  // Divide two numbers.
+  if (b === 0) {
+    throw new Error("Cannot divide by zero.");
+  }
   return a / b;
 }
 
+/**
+ * Accept two numbers as strings and one of four operators, then operate
+ * on the two numbers accordingly.
+ * @param {*} a The first input, as a string.
+ * @param {*} b The second input, as a string.
+ * @param {*} operator The operator, as a string.
+ * @returns The result of the operation.
+ */
 function operate(a, b, operator) {
-  // Accept two numbers as strings and one of four operators, then
-  // operate on the two numbers accordingly.
-  a = parseInt(a);
-  b = parseInt(b);
+  a = parseFloat(a);
+  b = parseFloat(b);
 
   switch (operator) {
     case "+":
-      return add(a, b);
+      return add(a, b).toString();
     case "-":
-      return subtract(a, b);
+      return subtract(a, b).toString();
     case "*":
-      return multiply(a, b);
+      return multiply(a, b).toString();
     case "/":
-      return divide(a, b);
+      return divide(a, b).toString();
+    default:
+      throw new Error("Unrecognized operator detected.");
   }
-
-  return undefined;
 }
 
-let inputs = [undefined, undefined];
-let inputIdx = 0;
-let operator;
-const maxDigits = 9;
+/**
+ * Clear all previously entered inputs.
+ */
+function clearAll() {
+  inputs = ["", ""];
+  inputIdx = 0;
+  output = "";
+  operator = "";
 
-function updateAndRender(newNumber) {
-  // Append a new number onto an existing input, if the input already
-  // exists. If not, initialize it. Both the input and the new number
-  // are strings.
+  renderOutput(inputs[inputIdx]);
+}
+
+/**
+ * Process the press of a number button. Append the new entry onto the
+ * current input, if the input already exists. If not, initialize it.
+ * @param {*} newNumber
+ * @returns
+ */
+function processNumberPress(newNumber) {
+  // Only used the saved output when the user presses the equals sign
+  // button and then immediately hits an operator. If the user starts
+  // entering another number, clear saved output.
+  output = "";
+
+  // Start a new input.
   if (!inputs[inputIdx]) {
     inputs[inputIdx] = newNumber;
-  } else {
-    inputs[inputIdx] += newNumber;
-  }
-
-  renderOutput();
-  return;
-}
-
-function isNumberLike(input) {
-  /* Check if the input looks like a number. */
-  return /^-?\d+(\.\d+)?$/.test(input);
-}
-
-function renderOutput() {
-  /* Render the output to the display. */
-  const input = inputs[inputIdx];
-
-  // Double-check that the input looks like a number.
-  if (!isNumberLike(input)) {
-    display.textContent = "ERROR";
+    renderOutput(inputs[inputIdx]);
     return;
   }
 
-  // If the number of digits is less than or equal to the number
-  // available, just render the input as-is.
+  if (inputs[inputIdx] === "0") {
+    // If the user enters more than one zero (and nothing else), only
+    // save one zero.
+    if (newNumber === "0") {
+      return;
+    }
+
+    // Do not show leading zeros for whole numbers.
+    inputs[inputIdx] = newNumber;
+    renderOutput(inputs[inputIdx]);
+    return;
+  }
+
+  // Append to an existing input.
+  inputs[inputIdx] += newNumber;
+  renderOutput(inputs[inputIdx]);
+  return;
+}
+
+/**
+ * Process the press of the plus, minus, multiply, or division buttons.
+ * @param {*} newOperator The operator just pressed, as a string.
+ * @returns
+ */
+function processOperatorPress(newOperator) {
+  if (!inputs[0] && !inputs[1]) {
+    // If the user presses the equals sign and then immediately presses
+    // an operator, use the value in `output` to start a new operation.
+    if (output) {
+      inputs[0] = output;
+      operator = newOperator;
+      inputIdx = 1;
+      return;
+    }
+
+    return;
+  }
+
+  // If the user has entered one number and then hits the operator, save
+  // the operator and let them enter the second number.
+  if (inputs[0] && !inputs[1]) {
+    operator = newOperator;
+    inputIdx = 1;
+    return;
+  }
+
+  if (!inputs[0] && inputs[1]) {
+    throw new Error("Input 0 is empty, but input 1 is not.");
+  }
+
+  // If the user has entered two numbers and then hits an operator,
+  // execute the previously saved operation, save its result to the
+  // first input, and set up for the new operation.
+  inputs[0] = operate(inputs[0], inputs[1], operator);
+  renderOutput(inputs[0]);
+  inputs[1] = "";
+  operator = newOperator;
+  inputIdx = 1;
+}
+
+/**
+ * Process the press of the equal button.
+ * @returns
+ */
+function processEqualPress() {
+  if (!inputs[1]) {
+    return;
+  }
+
+  if (!inputs[0] && inputs[1]) {
+    throw new Error("Input 0 is empty, but input 1 is not.");
+  }
+
+  output = operate(inputs[0], inputs[1], operator);
+  renderOutput(output);
+  inputs[0] = inputs[1] = operator = "";
+  inputIdx = 0;
+}
+
+/**
+ * Check if the input looks like a number.
+ * @param {*} input
+ * @returns
+ */
+function isNumberLike(input) {
+  return /^-?\d+(\.\d+)?$/.test(input);
+}
+
+/**
+ * Render the output to the display.
+ * @param {*} input
+ * @returns
+ */
+function renderOutput(input) {
+  if (!input) {
+    display.textContent = input;
+    return;
+  }
+
+  if (!isNumberLike(input)) {
+    throw new Error("The calculator is trying to render a non-number.");
+  }
+
   const numDigits = input.length;
   if (numDigits <= maxDigits) {
     display.textContent = input;
@@ -96,16 +229,10 @@ function renderOutput() {
       return;
     }
 
-    try {
-      display.textContent = truncateDecimalNumber(input);
-    } catch (err) {
-      console.log(err);
-      display.textContent = "ERROR";
-    }
+    display.textContent = truncateDecimalNumber(input);
     return;
   }
 
-  // Big positive or negative number, no decimal.
   display.textContent = formatBigNumberAsScientific(input);
   return;
 }
@@ -199,8 +326,8 @@ function truncateDecimalNumber(input) {
 
   if (wholePart.length > maxDigits) {
     throw new Error(
-      "The number must be small enough to capture its entire whole part in the"
-      + " output."
+      `The number must be small enough to capture its entire whole part in the
+      output.`
     );
   }
 
@@ -237,11 +364,61 @@ function truncateDecimalNumber(input) {
   return result.at(-1) === "." ? result.slice(0, -1) : result;
 }
 
+const display = document.querySelector("#display");
+
+/**
+ * Handle calculator errors.
+ * @param {*} error
+ * @returns
+ */
+function handleError(error) {
+  console.error(error);
+  display.textContent = "ERROR";
+
+  inputs[0] = inputs[1] = operator = "";
+  inputIdx = 0;
+  return;
+}
+
 const numberButtons = document.querySelectorAll(".number-row button");
 numberButtons.forEach(
   (button) => button.addEventListener(
-    "click", (event) => updateAndRender(event.target.value)
+    "click", (event) => {
+      try {
+        processNumberPress(event.target.value);
+      } catch (error) {
+        handleError(error);
+      }
+    }
   )
 );
 
-const display = document.querySelector("#display");
+const clearButton = document.querySelector("#clear-button");
+clearButton.addEventListener("click", () => clearAll());
+
+const divideButton = document.querySelector("#divide");
+const multiplyButton = document.querySelector("#multiply");
+const minusButton = document.querySelector("#minus");
+const plusButton = document.querySelector("#plus");
+[divideButton, multiplyButton, minusButton, plusButton].forEach(
+  (button) => button.addEventListener(
+    "click", (event) => {
+      try {
+        processOperatorPress(event.target.value);
+      } catch (error) {
+        handleError(error);
+      }
+    }
+  )
+);
+
+const equalButton = document.querySelector("#equal");
+equalButton.addEventListener(
+  "click", () => {
+    try {
+      processEqualPress();
+    } catch (error) {
+      handleError(error);
+    }
+  }
+);

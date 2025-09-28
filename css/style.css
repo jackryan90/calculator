@@ -79,13 +79,13 @@ body {
   display: flex;
 }
 
-#clear {
+#clear-button {
   background-color: rgba(13, 106, 145, 0.9);
 }
-#clear:hover {
+#clear-button:hover {
   background-color: rgba(13, 106, 145, 0.8);
 }
-#clear:active {
+#clear-button:active {
   background-color: rgba(13, 106, 145, 1.0);
 }
 
