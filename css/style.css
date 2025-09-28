@@ -115,21 +115,17 @@ button {
   border-right: 1px solid black;
 }
 
-.number-row > *,
-#zero {
+.number-row > * {
   background-color: rgba(41, 72, 109, 0.9);
 }
-.number-row > *:hover,
-#zero:hover {
+.number-row > *:hover {
   background-color: rgba(41, 72, 109, 0.8);
 }
-.number-row > *:active,
-#zero:active {
+.number-row > *:active {
   background-color: rgba(41, 72, 109, 1.0);
 }
 
 #operators > :not(:last-child),
-#clear,
-.number-row {
+#numbers-and-clear > :not(:last-child) {
   border-bottom: 1px solid black;
 }
