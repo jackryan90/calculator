@@ -189,7 +189,14 @@ function processEqualPress() {
  */
 function processPlusMinusPress() {
   const currentInput = inputs[inputIdx];
-  const ignoredPatterns = /^$|^0$|^0\.$|^0\.0+$/;
+
+  if (currentInput === "") {
+    output = "";
+    renderOutput(currentInput);
+    return;
+  }
+
+  const ignoredPatterns = /^0$|^0\.$|^0\.0+$/;
   if (ignoredPatterns.test(currentInput)) {
     return;
   }
@@ -235,15 +242,12 @@ function processBackspacePress() {
   const currentInput = inputs[inputIdx];
 
   if (currentInput === "") {
-    if (output) {
-      inputs[inputIdx] = output.slice(0, -1);
       output = "";
-    } else {
+      renderOutput(currentInput);
       return;
-    }
-  } else {
-    inputs[inputIdx] = currentInput.slice(0, -1);
   }
+
+  inputs[inputIdx] = currentInput.slice(0, -1);
 
   if (inputs[inputIdx] === "-") {
     inputs[inputIdx] = "";
