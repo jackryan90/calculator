@@ -65,27 +65,36 @@ body {
   font-size: 32px;
 }
 
-#numbers-and-clear {
+#number-pad {
   flex: 3 0 0;
   display: flex;
   flex-direction: column;
 }
 
-#numbers-and-clear > * {
+#number-pad > div {
   flex: 1 0 0;
-}
-
-#numbers-and-clear > div {
   display: flex;
 }
 
-#clear-button {
+button {
+  display: block;
+  flex: 1 0 0;
+}
+
+#all-clear {
+  flex: 2 0 0;
+}
+
+#all-clear,
+#backspace {
   background-color: rgba(13, 106, 145, 0.9);
 }
-#clear-button:hover {
+#all-clear:hover,
+#backspace:hover {
   background-color: rgba(13, 106, 145, 0.8);
 }
-#clear-button:active {
+#all-clear:active,
+#backspace:active {
   background-color: rgba(13, 106, 145, 1.0);
 }
 
@@ -106,15 +115,6 @@ body {
   background-color: rgba(235, 163, 38, 1.0);
 }
 
-button {
-  display: block;
-  flex: 1 0 0;
-}
-
-.number-row > :not(:last-child) {
-  border-right: 1px solid black;
-}
-
 .number-row > * {
   background-color: rgba(41, 72, 109, 0.9);
 }
@@ -125,7 +125,12 @@ button {
   background-color: rgba(41, 72, 109, 1.0);
 }
 
+#all-clear,
+.number-row > :not(:last-child) {
+  border-right: 1px solid black;
+}
+
 #operators > :not(:last-child),
-#numbers-and-clear > :not(:last-child) {
+#number-pad > :not(:last-child) {
   border-bottom: 1px solid black;
 }

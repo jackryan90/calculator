@@ -184,12 +184,77 @@ function processEqualPress() {
 }
 
 /**
+ * Negate the current input.
+ * @returns
+ */
+function processPlusMinusPress() {
+  const currentInput = inputs[inputIdx];
+  const ignoredPatterns = /^$|^0$|^0\.$|^0\.0+$/;
+  if (ignoredPatterns.test(currentInput)) {
+    return;
+  }
+
+  if (currentInput[0] === "-") {
+    inputs[inputIdx] = currentInput.slice(1);
+    renderOutput(inputs[inputIdx]);
+    return;
+  }
+
+  inputs[inputIdx] = `-${currentInput}`;
+  renderOutput(inputs[inputIdx]);
+  return;
+}
+
+/**
+ * Append a decimal to the current input.
+ * @returns
+ */
+function processDecimalPress() {
+  const currentInput = inputs[inputIdx];
+
+  if (currentInput.includes(".")) {
+    return;
+  }
+
+  if (currentInput === "") {
+    inputs[inputIdx] = "0.";
+    renderOutput(inputs[inputIdx]);
+    return;
+  }
+
+  inputs[inputIdx] = `${currentInput}.`;
+  renderOutput(inputs[inputIdx]);
+  return;
+}
+
+/**
+ * Remove the last character from the current input.
+ * @returns
+ */
+function processBackspacePress() {
+  const currentInput = inputs[inputIdx];
+
+  if (currentInput === "") {
+    return;
+  }
+
+  inputs[inputIdx] = currentInput.slice(0, -1);
+
+  if (inputs[inputIdx] === "-") {
+    inputs[inputIdx] = "";
+  }
+
+  renderOutput(inputs[inputIdx]);
+  return;
+}
+
+/**
  * Check if the input looks like a number.
  * @param {*} input
  * @returns
  */
 function isNumberLike(input) {
-  return /^-?\d+(\.\d+)?$/.test(input);
+  return /^-?\d+(\.\d*)?$/.test(input);
 }
 
 /**
@@ -224,7 +289,7 @@ function renderOutput(input) {
     const numLeadingZeros = (
       Array.from(decimalPart).findIndex((char) => char != "0")
     );
-    if (wholePart === "-0" && numLeadingZeros >= 3) {
+    if (/^(-)?0$/.test(wholePart) && numLeadingZeros >= 3) {
       display.textContent = formatSmallNumberAsScientific(input);
       return;
     }
@@ -260,7 +325,9 @@ function formatBigNumberAsScientific(input) {
 
     const roundingDigit = parseInt(rawNumber.at(allowed));
     if (roundingDigit >= 5) {
-      truncated = (parseInt(truncated) + 1).toString();
+      truncated = (
+        truncated.slice(0,-1) + (parseInt(truncated.at(-1)) + 1).toString()
+      );
     }
   } else {
     truncated = rawNumber;
@@ -300,7 +367,9 @@ function formatSmallNumberAsScientific(input) {
 
     const roundingDigit = parseInt(significantDigits.at(allowed));
     if (roundingDigit >= 5) {
-      truncated = (parseInt(truncated) + 1).toString();
+      truncated = (
+        truncated.slice(0,-1) + (parseInt(truncated.at(-1)) + 1).toString()
+      );
     }
   } else {
     truncated = significantDigits;
@@ -344,7 +413,9 @@ function truncateDecimalNumber(input) {
 
     const roundingDigit = parseInt(rawNumber.at(allowed));
     if (roundingDigit >= 5) {
-      truncated = (parseInt(truncated) + 1).toString();
+      truncated = (
+        truncated.slice(0,-1) + (parseInt(truncated.at(-1)) + 1).toString()
+      );
     }
   } else {
     truncated = rawNumber;
@@ -364,23 +435,27 @@ function truncateDecimalNumber(input) {
   return result.at(-1) === "." ? result.slice(0, -1) : result;
 }
 
-const display = document.querySelector("#display");
-
 /**
  * Handle calculator errors.
  * @param {*} error
  * @returns
- */
+*/
 function handleError(error) {
   console.error(error);
   display.textContent = "ERROR";
+  console.error(inputs);
 
   inputs[0] = inputs[1] = operator = "";
   inputIdx = 0;
   return;
 }
 
-const numberButtons = document.querySelectorAll(".number-row button");
+const display = document.querySelector("#display");
+
+const numberButtons = (
+  Array.from(document.querySelectorAll(".number-row button"))
+  .filter((button) => !(button.value == "plus-minus" || button.value == "."))
+)
 numberButtons.forEach(
   (button) => button.addEventListener(
     "click", (event) => {
@@ -393,7 +468,7 @@ numberButtons.forEach(
   )
 );
 
-const clearButton = document.querySelector("#clear-button");
+const clearButton = document.querySelector("#all-clear");
 clearButton.addEventListener("click", () => clearAll());
 
 const divideButton = document.querySelector("#divide");
@@ -422,3 +497,12 @@ equalButton.addEventListener(
     }
   }
 );
+
+const plusMinusButton = document.querySelector("#plus-minus");
+plusMinusButton.addEventListener("click", () => processPlusMinusPress());
+
+const decimalButton = document.querySelector("#decimal");
+decimalButton.addEventListener("click", () => processDecimalPress());
+
+const backspaceButton = document.querySelector("#backspace");
+backspaceButton.addEventListener("click", () => processBackspacePress());
