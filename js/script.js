@@ -235,10 +235,15 @@ function processBackspacePress() {
   const currentInput = inputs[inputIdx];
 
   if (currentInput === "") {
-    return;
+    if (output) {
+      inputs[inputIdx] = output.slice(0, -1);
+      output = "";
+    } else {
+      return;
+    }
+  } else {
+    inputs[inputIdx] = currentInput.slice(0, -1);
   }
-
-  inputs[inputIdx] = currentInput.slice(0, -1);
 
   if (inputs[inputIdx] === "-") {
     inputs[inputIdx] = "";
@@ -506,3 +511,48 @@ decimalButton.addEventListener("click", () => processDecimalPress());
 
 const backspaceButton = document.querySelector("#backspace");
 backspaceButton.addEventListener("click", () => processBackspacePress());
+
+// Keyboard support
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    clearAll();
+    return;
+  }
+
+  if (event.key === "Delete" || event.key === "Backspace") {
+    processBackspacePress();
+    return;
+  }
+
+  let numbers = [];
+  for (i = 0; i < 10; i++) {
+    numbers.push(i.toString());
+  }
+  if (numbers.includes(event.key)) {
+    processNumberPress(event.key);
+    return;
+  }
+
+  if (event.altKey && event.code === "Minus") {
+    processPlusMinusPress();
+    return;
+  }
+
+  if (event.key === ".") {
+    processDecimalPress();
+    return;
+  }
+
+  const operators = ["/", "*", "-", "+"];
+  if (operators.includes(event.key)) {
+    processOperatorPress(event.key);
+    return;
+  }
+
+  if (event.key === "Enter") {
+    processEqualPress();
+    return;
+  }
+
+  return;
+})
